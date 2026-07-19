@@ -133,6 +133,7 @@ if (index >= 0) {
     current = index;
     renderStep();
     show('routeScreen');
+  }
 },
 
             function () {
