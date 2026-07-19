@@ -125,8 +125,14 @@ qrHandled = false;
 
     await closeQrScanner();
 
-    alert(decodedText);
+   const id = new URL(decodedText).searchParams.get('start');
 
+const index = cfg.route.findIndex(step => step.id === id);
+
+if (index >= 0) {
+    current = index;
+    renderStep();
+    show('routeScreen');
 },
 
             function () {
