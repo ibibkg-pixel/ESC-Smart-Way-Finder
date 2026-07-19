@@ -42,7 +42,7 @@ window.ESC_CONFIG = {
       titleEn: "Continue straight",
       detailAr: "واصل السير مباشرة حتى تصل إلى باب المركز.",
       detailEn: "Continue straight until you reach the center entrance.",
-      footerAr: "المعرفة في كل خطوة",
+      footerAr: "المعرفة مهمة في كل خطوة",
       footerEn: "Knowledge in every step"
     },
     {

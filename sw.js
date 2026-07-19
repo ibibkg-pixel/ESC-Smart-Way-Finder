@@ -1,4 +1,4 @@
-const CACHE='esc-wayfinder-v4';
+const CACHE='esc-wayfinder-v6';
 const FILES=['./','./index.html','./styles.css','./app.js','./config.js','./manifest.webmanifest','./assets/esc-logo.png','./assets/esc-logo-transparent.png','./assets/icon-192.png','./assets/icon-512.png','./assets/social-preview.jpg'];
 self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil(caches.open(CACHE).then(c=>c.addAll(FILES)))});
 self.addEventListener('activate',e=>e.waitUntil(Promise.all([self.clients.claim(),caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k))))])));
