@@ -14,8 +14,7 @@
       welcomeTitle: 'مرحبًا بك',
       welcomeText:
         'اتبع الإرشادات خطوة بخطوة للوصول بسهولة إلى مقر مركز الخدمات التربوية.',
-      start: 'ابدأ الرحلة',
-      scanCheckpoint: '📷 مسح رمز نقطة إرشادية',
+      start: 'ابدأ من المدخل الرئيسي',
       privacy:
         'لا يحتاج التطبيق إلى تسجيل الدخول ولا يجمع بيانات شخصية.',
       routeMap: 'عرض المسار',
@@ -37,8 +36,7 @@
       welcomeTitle: 'Welcome',
       welcomeText:
         'Follow the step-by-step directions to reach the Educational Services Center easily.',
-      start: 'Start route',
-      scanCheckpoint: '📷 Scan checkpoint QR',
+      start: 'Start from the main entrance',
       privacy:
         'No sign-in is required and no personal data is collected.',
       routeMap: 'View route',
@@ -79,7 +77,11 @@
     document.documentElement.lang = lang;
     document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
 
-    $('langBtn').textContent = lang === 'ar' ? 'EN' : 'ع';
+    const langButton = $('langBtn');
+
+    if (langButton) {
+      langButton.textContent = lang === 'ar' ? 'EN' : 'ع';
+    }
 
     document.querySelectorAll('[data-i18n]').forEach((element) => {
       const key = element.dataset.i18n;
@@ -89,10 +91,14 @@
       }
     });
 
-    $('helpMessage').textContent =
-      lang === 'ar'
-        ? cfg.helpMessageAr
-        : cfg.helpMessageEn;
+    const helpMessage = $('helpMessage');
+
+    if (helpMessage) {
+      helpMessage.textContent =
+        lang === 'ar'
+          ? cfg.helpMessageAr
+          : cfg.helpMessageEn;
+    }
 
     renderStep();
     renderTimeline();
@@ -149,45 +155,95 @@
   }
 
   function renderStep() {
+    if (!cfg || !Array.isArray(cfg.route)) {
+      return;
+    }
+
     const step = cfg.route[current];
 
     if (!step) {
       return;
     }
 
-    $('stepCount').textContent =
-      `${i18n[lang].step} ${current + 1} ` +
-      `${i18n[lang].of} ${cfg.route.length}`;
+    const stepCount = $('stepCount');
+    const progressBar = $('progressBar');
+    const directionIcon = $('directionIcon');
+    const stepTitle = $('stepTitle');
+    const stepDetail = $('stepDetail');
+    const stepFooter = $('stepFooter');
+    const prevButton = $('prevBtn');
+    const nextButton = $('nextBtn');
 
-    $('progressBar').style.width =
-      `${((current + 1) / cfg.route.length) * 100}%`;
+    if (stepCount) {
+      stepCount.textContent =
+        `${i18n[lang].step} ${current + 1} ` +
+        `${i18n[lang].of} ${cfg.route.length}`;
+    }
 
-    $('directionIcon').innerHTML = icon(step.icon);
-    $('stepTitle').textContent = routeText(step, 'title');
-    $('stepDetail').textContent = routeText(step, 'detail');
-    $('stepFooter').textContent = routeText(step, 'footer');
+    if (progressBar) {
+      progressBar.style.width =
+        `${((current + 1) / cfg.route.length) * 100}%`;
+    }
 
-    $('prevBtn').disabled = current === 0;
-    $('prevBtn').style.opacity = current === 0 ? '.45' : '1';
+    if (directionIcon) {
+      directionIcon.innerHTML = icon(step.icon);
+    }
 
-    $('nextBtn').textContent =
-      current === cfg.route.length - 1
-        ? i18n[lang].finish
-        : i18n[lang].next;
+    if (stepTitle) {
+      stepTitle.textContent = routeText(step, 'title');
+    }
+
+    if (stepDetail) {
+      stepDetail.textContent = routeText(step, 'detail');
+    }
+
+    if (stepFooter) {
+      stepFooter.textContent = routeText(step, 'footer');
+    }
+
+    if (prevButton) {
+      prevButton.disabled = current === 0;
+      prevButton.style.opacity = current === 0 ? '0.45' : '1';
+    }
+
+    if (nextButton) {
+      nextButton.textContent =
+        current === cfg.route.length - 1
+          ? i18n[lang].finish
+          : i18n[lang].next;
+    }
   }
 
   function renderTimeline() {
-    $('routeTimeline').innerHTML = cfg.route
+    const routeTimeline = $('routeTimeline');
+
+    if (
+      !routeTimeline ||
+      !cfg ||
+      !Array.isArray(cfg.route)
+    ) {
+      return;
+    }
+
+    routeTimeline.innerHTML = cfg.route
       .map((step, index) => {
-        const currentClass = index === current ? 'current' : '';
+        const currentClass =
+          index === current ? 'current' : '';
 
         return `
           <div class="timeline-item ${currentClass}">
-            <div class="timeline-node">${index + 1}</div>
+            <div class="timeline-node">
+              ${index + 1}
+            </div>
 
             <div class="timeline-copy">
-              <strong>${routeText(step, 'title')}</strong>
-              <span>${routeText(step, 'detail')}</span>
+              <strong>
+                ${routeText(step, 'title')}
+              </strong>
+
+              <span>
+                ${routeText(step, 'detail')}
+              </span>
             </div>
           </div>
         `;
@@ -196,17 +252,31 @@
   }
 
   function renderPointChooser() {
-    $('pointChooser').innerHTML = cfg.route
+    const pointChooser = $('pointChooser');
+
+    if (
+      !pointChooser ||
+      !cfg ||
+      !Array.isArray(cfg.route)
+    ) {
+      return;
+    }
+
+    pointChooser.innerHTML = cfg.route
       .map((step, index) => {
         return `
-          <button class="point-choice" data-index="${index}">
+          <button
+            class="point-choice"
+            type="button"
+            data-index="${index}"
+          >
             ${index + 1}. ${routeText(step, 'title')}
           </button>
         `;
       })
       .join('');
 
-    $('pointChooser')
+    pointChooser
       .querySelectorAll('button')
       .forEach((button) => {
         button.onclick = () => {
@@ -219,315 +289,208 @@
   }
 
   function speak() {
-    if (!('speechSynthesis' in window)) {
+    if (
+      !('speechSynthesis' in window) ||
+      !cfg ||
+      !Array.isArray(cfg.route)
+    ) {
       return;
     }
 
-    speechSynthesis.cancel();
-
     const step = cfg.route[current];
+
+    if (!step) {
+      return;
+    }
+
+    window.speechSynthesis.cancel();
 
     const utterance = new SpeechSynthesisUtterance(
       `${routeText(step, 'title')}. ${routeText(step, 'detail')}`
     );
 
-    utterance.lang = lang === 'ar' ? 'ar-EG' : 'en-US';
+    utterance.lang =
+      lang === 'ar' ? 'ar-EG' : 'en-US';
+
     utterance.rate = 0.9;
 
-    speechSynthesis.speak(utterance);
+    window.speechSynthesis.speak(utterance);
   }
 
-  function goToCheckpoint(id) {
-    const index = cfg.route.findIndex((step) => step.id === id);
-
-    if (index >= 0) {
-      current = index;
-
-      renderStep();
-      show('routeScreen');
-
-      return true;
+  function goToCheckpoint(checkpointId) {
+    if (
+      !checkpointId ||
+      !cfg ||
+      !Array.isArray(cfg.route)
+    ) {
+      return false;
     }
 
-    return false;
-  }
+    const index = cfg.route.findIndex(
+      (step) => step.id === checkpointId
+    );
 
-  function startFromUrl() {
-    const id = new URLSearchParams(window.location.search).get('start');
-
-    if (id) {
-      goToCheckpoint(id);
+    if (index < 0) {
+      return false;
     }
-  }
 
-  $('startBtn').onclick = () => {
-    current = 0;
+    current = index;
 
     renderStep();
     show('routeScreen');
-  };
 
-  $('langBtn').onclick = () => {
-    setLang(lang === 'ar' ? 'en' : 'ar');
-  };
+    return true;
+  }
 
-  $('accessBtn').onclick = () => {
-    contrastMode = (contrastMode + 1) % 3;
+  function startFromUrl() {
+    const checkpointId =
+      new URLSearchParams(window.location.search)
+        .get('start');
 
-    document.body.classList.toggle(
-      'large-text',
-      contrastMode === 1
-    );
+    if (checkpointId) {
+      goToCheckpoint(checkpointId);
+    }
+  }
 
-    document.body.classList.toggle(
-      'high-contrast',
-      contrastMode === 2
-    );
-  };
+  const startButton = $('startBtn');
 
-  $('nextBtn').onclick = () => {
-    if (current < cfg.route.length - 1) {
-      current += 1;
+  if (startButton) {
+    startButton.onclick = () => {
+      current = 0;
+
       renderStep();
-    } else {
-      show('welcomeScreen');
-    }
-  };
-
-  $('prevBtn').onclick = () => {
-    if (current > 0) {
-      current -= 1;
-      renderStep();
-    }
-  };
-
-  $('mapBtn').onclick = () => {
-    renderTimeline();
-    show('mapScreen');
-  };
-
-  $('closeMapBtn').onclick = () => {
-    show('routeScreen');
-  };
-
-  $('backToRouteBtn').onclick = () => {
-    show('routeScreen');
-  };
-
-  $('speakBtn').onclick = speak;
-
-  $('helpBtn').onclick = () => {
-    renderPointChooser();
-    show('helpScreen');
-  };
-
-  $('closeHelpBtn').onclick = () => {
-    show('routeScreen');
-  };
-
-  $('choosePointBtn').onclick = () => {
-    $('pointChooser').hidden = !$('pointChooser').hidden;
-  };
-
-  if (cfg.contactPhone) {
-    $('callBtn').hidden = false;
-    $('callBtn').href = `tel:${cfg.contactPhone}`;
+      show('routeScreen');
+    };
   }
 
-  // =================================
-  // QR Camera Scanner
-  // =================================
+  const langButton = $('langBtn');
 
-  let qrScanner = null;
-  let qrScannerRunning = false;
-  let qrHandled = false;
-
-  async function onQrCodeSuccess(decodedText) {
-  if (qrHandled) {
-    return;
+  if (langButton) {
+    langButton.onclick = () => {
+      setLang(lang === 'ar' ? 'en' : 'ar');
+    };
   }
 
-  qrHandled = true;
+  const accessButton = $('accessBtn');
 
-  try {
-    const scannedUrl = new URL(decodedText, window.location.href);
-    const checkpointId = scannedUrl.searchParams.get('start');
+  if (accessButton) {
+    accessButton.onclick = () => {
+      contrastMode = (contrastMode + 1) % 3;
 
-    if (!checkpointId) {
-      alert(
-        lang === 'ar'
-          ? 'رمز QR لا يحتوي على نقطة إرشادية صحيحة.'
-          : 'The QR code does not contain a valid checkpoint.'
+      document.body.classList.toggle(
+        'large-text',
+        contrastMode === 1
       );
 
-      qrHandled = false;
-      return;
-    }
-
-    // فتح رابط نقطة الإرشاد مباشرة
-    window.location.href =
-      `${window.location.origin}${window.location.pathname}?start=${encodeURIComponent(checkpointId)}`;
-
-  } catch (error) {
-    console.error('QR URL error:', error);
-
-    alert(
-      lang === 'ar'
-        ? 'رمز QR غير صالح. يرجى تجربة رمز آخر.'
-        : 'The QR code is invalid. Please try another code.'
-    );
-
-    qrHandled = false;
-  }
-},
-    const scannerPanel = $('scannerPanel');
-
-    qrHandled = false;
-
-    if (!scannerPanel || qrScannerRunning) {
-      return;
-    }
-
-    if (typeof Html5Qrcode === 'undefined') {
-      alert(
-        lang === 'ar'
-          ? 'تعذر تحميل قارئ QR. تأكد من اتصال الإنترنت ثم حدّث الصفحة.'
-          : 'QR reader could not be loaded. Check your internet connection and refresh.'
+      document.body.classList.toggle(
+        'high-contrast',
+        contrastMode === 2
       );
-
-      return;
-    }
-
-    scannerPanel.hidden = false;
-
-    qrScanner = new Html5Qrcode('qrReader');
-
-    try {
-      await qrScanner.start(
-        {
-          facingMode: 'environment'
-        },
-        {
-          fps: 10,
-          qrbox: {
-            width: 230,
-            height: 230
-          }
-        },
-
-        async function onQrCodeSuccess(decodedText) {
-          if (qrHandled) {
-            return;
-          }
-
-          qrHandled = true;
-
-          await closeQrScanner();
-
-          try {
-            const scannedUrl = new URL(
-              decodedText,
-              window.location.href
-            );
-
-            const checkpointId =
-              scannedUrl.searchParams.get('start');
-
-            if (!checkpointId) {
-              alert(
-                lang === 'ar'
-                  ? 'رمز QR لا يحتوي على نقطة إرشادية صحيحة.'
-                  : 'The QR code does not contain a valid checkpoint.'
-              );
-
-              return;
-            }
-
-            const found = goToCheckpoint(checkpointId);
-
-            if (!found) {
-              alert(
-                lang === 'ar'
-                  ? 'لم يتم العثور على هذه النقطة في مسار التطبيق.'
-                  : 'This checkpoint was not found in the route.'
-              );
-            }
-          } catch (error) {
-            console.error('QR URL error:', error);
-
-            alert(
-              lang === 'ar'
-                ? 'رمز QR غير صالح. يرجى تجربة رمز آخر.'
-                : 'The QR code is invalid. Please try another code.'
-            );
-          }
-        },
-
-        function onQrCodeScanFailure() {
-          // لا نفعل شيئًا أثناء بحث الكاميرا عن الرمز
-        }
-      );
-
-      qrScannerRunning = true;
-    } catch (error) {
-      console.error('Camera start error:', error);
-
-      scannerPanel.hidden = true;
-      qrScanner = null;
-      qrScannerRunning = false;
-
-      alert(
-        lang === 'ar'
-          ? 'تعذر تشغيل الكاميرا. اسمح للموقع باستخدام الكاميرا ثم حاول مجددًا.'
-          : 'Unable to start the camera. Allow camera access and try again.'
-      );
-    }
+    };
   }
 
-  async function closeQrScanner() {
-    const scannerPanel = $('scannerPanel');
+  const nextButton = $('nextBtn');
 
-    try {
-      if (qrScanner && qrScannerRunning) {
-        await qrScanner.stop();
-        qrScanner.clear();
+  if (nextButton) {
+    nextButton.onclick = () => {
+      if (current < cfg.route.length - 1) {
+        current += 1;
+        renderStep();
+      } else {
+        current = 0;
+        renderStep();
+        show('welcomeScreen');
       }
-    } catch (error) {
-      console.error('Camera stop error:', error);
-    }
-
-    qrScannerRunning = false;
-    qrScanner = null;
-
-    if (scannerPanel) {
-      scannerPanel.hidden = true;
-    }
+    };
   }
 
-  const scanQrButton = $('scanBtn');
-  const closeQrButton = $('closeScannerBtn');
+  const previousButton = $('prevBtn');
 
-  if (scanQrButton) {
-    scanQrButton.addEventListener(
-      'click',
-      openQrScanner
-    );
+  if (previousButton) {
+    previousButton.onclick = () => {
+      if (current > 0) {
+        current -= 1;
+        renderStep();
+      }
+    };
   }
 
-  if (closeQrButton) {
-    closeQrButton.addEventListener(
-      'click',
-      closeQrScanner
-    );
+  const mapButton = $('mapBtn');
+
+  if (mapButton) {
+    mapButton.onclick = () => {
+      renderTimeline();
+      show('mapScreen');
+    };
   }
 
-  // تسجيل Service Worker
+  const closeMapButton = $('closeMapBtn');
+
+  if (closeMapButton) {
+    closeMapButton.onclick = () => {
+      show('routeScreen');
+    };
+  }
+
+  const backToRouteButton = $('backToRouteBtn');
+
+  if (backToRouteButton) {
+    backToRouteButton.onclick = () => {
+      show('routeScreen');
+    };
+  }
+
+  const speakButton = $('speakBtn');
+
+  if (speakButton) {
+    speakButton.onclick = speak;
+  }
+
+  const helpButton = $('helpBtn');
+
+  if (helpButton) {
+    helpButton.onclick = () => {
+      renderPointChooser();
+      show('helpScreen');
+    };
+  }
+
+  const closeHelpButton = $('closeHelpBtn');
+
+  if (closeHelpButton) {
+    closeHelpButton.onclick = () => {
+      show('routeScreen');
+    };
+  }
+
+  const choosePointButton = $('choosePointBtn');
+
+  if (choosePointButton) {
+    choosePointButton.onclick = () => {
+      const pointChooser = $('pointChooser');
+
+      if (pointChooser) {
+        pointChooser.hidden = !pointChooser.hidden;
+      }
+    };
+  }
+
+  const callButton = $('callBtn');
+
+  if (callButton && cfg.contactPhone) {
+    callButton.hidden = false;
+    callButton.href = `tel:${cfg.contactPhone}`;
+  }
+
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       navigator.serviceWorker
         .register('./sw.js')
         .catch((error) => {
-          console.error('Service Worker error:', error);
+          console.error(
+            'Service Worker registration error:',
+            error
+          );
         });
     });
   }
@@ -535,7 +498,6 @@
   setLang(lang);
   startFromUrl();
 
-  // تشغيل حركة الشعار
   const logo = $('escLogo');
 
   if (logo) {
@@ -543,34 +505,40 @@
   }
 })();
 
-// =================================
-// Ripple animation
-// =================================
-
 document
-  .querySelectorAll('.btn, button')
+  .querySelectorAll('.btn, button, a.primary-btn')
   .forEach((button) => {
-    button.addEventListener('click', function (event) {
-      const ripple = document.createElement('span');
+    button.addEventListener(
+      'click',
+      function (event) {
+        const ripple =
+          document.createElement('span');
 
-      ripple.classList.add('ripple');
+        ripple.classList.add('ripple');
 
-      const rect = this.getBoundingClientRect();
-      const size = Math.max(rect.width, rect.height);
+        const rect =
+          this.getBoundingClientRect();
 
-      ripple.style.width = `${size}px`;
-      ripple.style.height = `${size}px`;
+        const size =
+          Math.max(rect.width, rect.height);
 
-      ripple.style.left =
-        `${event.clientX - rect.left - size / 2}px`;
+        ripple.style.width = `${size}px`;
+        ripple.style.height = `${size}px`;
 
-      ripple.style.top =
-        `${event.clientY - rect.top - size / 2}px`;
+        ripple.style.left =
+          `${event.clientX - rect.left - size / 2}px`;
 
-      this.appendChild(ripple);
+        ripple.style.top =
+          `${event.clientY - rect.top - size / 2}px`;
 
-      ripple.addEventListener('animationend', () => {
-        ripple.remove();
-      });
-    });
+        this.appendChild(ripple);
+
+        ripple.addEventListener(
+          'animationend',
+          () => {
+            ripple.remove();
+          }
+        );
+      }
+    );
   });
