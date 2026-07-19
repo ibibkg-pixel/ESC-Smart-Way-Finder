@@ -1,1 +1,1 @@
-https://example.edu/esc-wayfinder/?start=first-floor
+https://ibibkg-pixel.github.io/ESC-Smart-Way-Finder/?start=first-floor

@@ -1,1 +1,1 @@
-https://example.edu/esc-wayfinder/?start=corner
+https://ibibkg-pixel.github.io/ESC-Smart-Way-Finder/?start=corner
