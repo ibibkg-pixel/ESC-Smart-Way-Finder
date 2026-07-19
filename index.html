@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#06295f" />
+  <meta name="description" content="دليل ذكي للوصول إلى مركز الخدمات التربوية" />
+  <meta property="og:title" content="ESC Smart Wayfinder" />
+  <meta property="og:description" content="دليلك الذكي للوصول إلى مركز الخدمات التربوية" />
+  <meta property="og:image" content="assets/social-preview.jpg" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="assets/icon-192.png" />
+  <link rel="apple-touch-icon" href="assets/icon-192.png" />
+  <link rel="stylesheet" href="styles.css" />
+  <title>ESC Smart Wayfinder</title>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <button id="langBtn" class="icon-btn" type="button" aria-label="Change language">EN</button>
+      <div class="brand-mini">
+        <span class="brand-dot"></span>
+        <span>ESC Smart Wayfinder</span>
+      </div>
+      <button id="accessBtn" class="icon-btn" type="button" aria-label="Accessibility">Aa</button>
+    </header>
+
+    <main>
+      <section id="welcomeScreen" class="screen active">
+        <div class="hero-card">
+      <img id="escLogo" class="hero-logo logo-intro" src="assets/esc-logo.png" alt="شعار مركز الخدمات التربوية" />
+          <p class="eyebrow" data-i18n="smartGuide">الدليل الذكي للوصول إلى المركز</p>
+          <h1 data-i18n="welcomeTitle">مرحبًا بك</h1>
+          <p class="lead" data-i18n="welcomeText">اتبع الإرشادات خطوة بخطوة للوصول بسهولة إلى مقر مركز الخدمات التربوية.</p>
+          <button id="startBtn" class="primary-btn" type="button">
+            <span data-i18n="start">ابدأ الرحلة</span>
+            <span class="btn-arrow">←</span>
+          </button>
+        <button id="scanBtn" class="secondary-btn" type="button">
+    <span data-i18n="scanCheckpoint">📷 مسح رمز نقطة إرشادية</span>
+</button>
+
+<div id="scannerPanel" class="scanner-panel" hidden>
+    <div id="qrReader"></div>
+
+    <button id="closeScannerBtn"
+            class="secondary-btn"
+            type="button">
+        إغلاق الكاميرا
+    </button>
+</div>
+        <p class="privacy-note" data-i18n="privacy">لا يحتاج التطبيق إلى تسجيل الدخول ولا يجمع بيانات شخصية.</p>
+      </section>
+
+      <section id="routeScreen" class="screen" aria-live="polite">
+        <div class="progress-head">
+          <span id="stepCount">الخطوة 1 من 5</span>
+          <button id="mapBtn" class="text-btn" type="button" data-i18n="routeMap">عرض المسار</button>
+        </div>
+        <div class="progress-track"><div id="progressBar" class="progress-bar"></div></div>
+
+        <article class="direction-card">
+          <img class="card-logo" src="assets/esc-logo.png" alt="ESC" />
+          <div id="directionIcon" class="direction-icon" aria-hidden="true"></div>
+          <h2 id="stepTitle">اصعد السلم</h2>
+          <p id="stepDetail">ابدأ من مدخل الكلية واصعد إلى الدور الأول.</p>
+          <button id="speakBtn" class="speak-btn" type="button">
+            <span class="speaker">◖)))</span>
+            <span data-i18n="listen">استمع إلى الإرشاد</span>
+          </button>
+          <div id="stepFooter" class="motivational">بداية الطريق نحو التميز</div>
+        </article>
+
+        <div class="nav-actions">
+          <button id="prevBtn" class="ghost-btn" type="button" data-i18n="previous">السابق</button>
+          <button id="nextBtn" class="primary-btn compact" type="button" data-i18n="next">التالي</button>
+        </div>
+        <button id="helpBtn" class="help-link" type="button" data-i18n="needHelp">لم أجد الطريق</button>
+      </section>
+
+      <section id="mapScreen" class="screen">
+        <div class="panel">
+          <button id="closeMapBtn" class="close-btn" type="button" aria-label="Close">×</button>
+          <h2 data-i18n="routeMap">مسار الوصول</h2>
+          <div id="routeTimeline" class="timeline"></div>
+          <button id="backToRouteBtn" class="primary-btn" type="button" data-i18n="continueRoute">متابعة الإرشاد</button>
+        </div>
+      </section>
+
+      <section id="helpScreen" class="screen">
+        <div class="panel help-panel">
+          <button id="closeHelpBtn" class="close-btn" type="button" aria-label="Close">×</button>
+          <div class="help-icon">?</div>
+          <h2 data-i18n="helpTitle">هل تحتاج إلى مساعدة؟</h2>
+          <p id="helpMessage">تعذر الوصول؟ تواصل مع فريق المركز للمساعدة.</p>
+          <a id="callBtn" class="primary-btn" href="#" hidden data-i18n="callCenter">اتصل بالمركز</a>
+          <button id="choosePointBtn" class="secondary-btn" type="button" data-i18n="choosePoint">اختر موقعك الحالي</button>
+          <div id="pointChooser" class="point-chooser" hidden></div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="app-footer">ESC • Educational Services Center</footer>
+  </div>
+
+  <script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
