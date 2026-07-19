@@ -120,13 +120,13 @@
       `;
     }
 
-    if (type === 'right') {
-      return `
-        <svg viewBox="0 0 180 120" aria-hidden="true">
-          <path ${fill} d="M12 46h101V17l55 43-55 43V74H12z"/>
-        </svg>
-      `;
-    }
+  if (type === 'right') {
+  return `
+    <svg viewBox="0 0 180 120" aria-hidden="true">
+      <path ${fill} d="M168 46H67V17L12 60l55 43V74h101z"/>
+    </svg>
+  `;
+}
 
     if (type === 'left-turn') {
       return `
