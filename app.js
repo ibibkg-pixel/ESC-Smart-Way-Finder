@@ -342,7 +342,44 @@
   let qrScannerRunning = false;
   let qrHandled = false;
 
-  async function openQrScanner() {
+  async function onQrCodeSuccess(decodedText) {
+  if (qrHandled) {
+    return;
+  }
+
+  qrHandled = true;
+
+  try {
+    const scannedUrl = new URL(decodedText, window.location.href);
+    const checkpointId = scannedUrl.searchParams.get('start');
+
+    if (!checkpointId) {
+      alert(
+        lang === 'ar'
+          ? 'رمز QR لا يحتوي على نقطة إرشادية صحيحة.'
+          : 'The QR code does not contain a valid checkpoint.'
+      );
+
+      qrHandled = false;
+      return;
+    }
+
+    // فتح رابط نقطة الإرشاد مباشرة
+    window.location.href =
+      `${window.location.origin}${window.location.pathname}?start=${encodeURIComponent(checkpointId)}`;
+
+  } catch (error) {
+    console.error('QR URL error:', error);
+
+    alert(
+      lang === 'ar'
+        ? 'رمز QR غير صالح. يرجى تجربة رمز آخر.'
+        : 'The QR code is invalid. Please try another code.'
+    );
+
+    qrHandled = false;
+  }
+},
     const scannerPanel = $('scannerPanel');
 
     qrHandled = false;
