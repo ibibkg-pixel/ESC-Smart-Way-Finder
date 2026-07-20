@@ -37,7 +37,7 @@ window.ESC_CONFIG = {
     },
     {
       id: "corridor",
-      icon: "right",
+      icon: "left",
       titleAr: "تابع السير",
       titleEn: "Continue straight",
       detailAr: "واصل السير مباشرة حتى تصل إلى باب المركز.",
