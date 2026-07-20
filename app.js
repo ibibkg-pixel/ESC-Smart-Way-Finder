@@ -294,34 +294,123 @@ if (type === 'left') {
       });
   }
 
-  function speak() {
-    if (
-      !('speechSynthesis' in window) ||
-      !cfg ||
-      !Array.isArray(cfg.route)
-    ) {
-      return;
-    }
+  function getPreferredVoice() {
+  const voices = window.speechSynthesis.getVoices();
 
-    const step = cfg.route[current];
-
-    if (!step) {
-      return;
-    }
-
-    window.speechSynthesis.cancel();
-
-    const utterance = new SpeechSynthesisUtterance(
-      `${routeText(step, 'title')}. ${routeText(step, 'detail')}`
-    );
-
-    utterance.lang =
-      lang === 'ar' ? 'ar-EG' : 'en-US';
-
-    utterance.rate = 0.9;
-
-    window.speechSynthesis.speak(utterance);
+  if (!voices.length) {
+    return null;
   }
+
+  // البحث أولًا عن صوت عربي مصري
+  const egyptianArabicVoice = voices.find((voice) => {
+    const lang = voice.lang.toLowerCase();
+    const name = voice.name.toLowerCase();
+
+    return (
+      lang === 'ar-eg' &&
+      (
+        name.includes('female') ||
+        name.includes('woman') ||
+        name.includes('salma') ||
+        name.includes('hoda') ||
+        name.includes('mona')
+      )
+    );
+  });
+
+  if (egyptianArabicVoice) {
+    return egyptianArabicVoice;
+  }
+
+  // أي صوت مصري متاح
+  const anyEgyptianVoice = voices.find(
+    (voice) => voice.lang.toLowerCase() === 'ar-eg'
+  );
+
+  if (anyEgyptianVoice) {
+    return anyEgyptianVoice;
+  }
+
+  // أي صوت عربي أنثوي
+  const arabicFemaleVoice = voices.find((voice) => {
+    const lang = voice.lang.toLowerCase();
+    const name = voice.name.toLowerCase();
+
+    return (
+      lang.startsWith('ar') &&
+      (
+        name.includes('female') ||
+        name.includes('woman') ||
+        name.includes('salma') ||
+        name.includes('hoda') ||
+        name.includes('mona')
+      )
+    );
+  });
+
+  if (arabicFemaleVoice) {
+    return arabicFemaleVoice;
+  }
+
+  // أي صوت عربي متاح
+  return voices.find(
+    (voice) => voice.lang.toLowerCase().startsWith('ar')
+  ) || null;
+}
+
+function speak() {
+  if (
+    !('speechSynthesis' in window) ||
+    !cfg ||
+    !Array.isArray(cfg.route)
+  ) {
+    return;
+  }
+
+  const step = cfg.route[current];
+
+  if (!step) {
+    return;
+  }
+
+  window.speechSynthesis.cancel();
+
+  const text =
+    `${routeText(step, 'title')}. ` +
+    `${routeText(step, 'detail')}`;
+
+  const utterance = new SpeechSynthesisUtterance(text);
+
+  if (lang === 'ar') {
+    utterance.lang = 'ar-EG';
+
+    const preferredVoice = getPreferredVoice();
+
+    if (preferredVoice) {
+      utterance.voice = preferredVoice;
+    }
+
+    // نبرة واضحة وواثقة
+    utterance.rate = 0.88;
+    utterance.pitch = 1.08;
+    utterance.volume = 1;
+  } else {
+    utterance.lang = 'en-US';
+    utterance.rate = 0.9;
+    utterance.pitch = 1;
+    utterance.volume = 1;
+  }
+
+  window.speechSynthesis.speak(utterance);
+}
+if ('speechSynthesis' in window) {
+  window.speechSynthesis.addEventListener(
+    'voiceschanged',
+    () => {
+      window.speechSynthesis.getVoices();
+    }
+  );
+}
 
   function goToCheckpoint(checkpointId) {
     if (
